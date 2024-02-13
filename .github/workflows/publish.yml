@@ -6,23 +6,24 @@ on:
   pull_request:
     branches: ["main"]
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-
 jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - user: pnpm/actions-setup@v2
-          with:
-            version: 7
-        - user: pnpm/action-node@v3
-          with:
-            node-version: 16.x
-            cache: pnpm
-        - run: pnpm install --frozen-lockfile
-        - name: Create Release Pull Request or Publish
-          id: changeset
-          user: changesets/action@v1
-            with:
-              publish: pnpm run build
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out the repository code
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16" # Specify the Node.js version you want to use
+
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      - name: Install dependencies with PNPM
+        run: pnpm install
+
+      - name: Build the React app
+        run: pnpm run build
